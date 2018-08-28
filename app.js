@@ -1,6 +1,25 @@
 /** Multer for File upload  BEGIN **/
 const multer  = require('multer');
 const misc = require.cache.misc;
+const Promise = require('bluebird');
+const mongoose = Promise.promisifyAll(require('mongoose'));
+mongoose.Promise = global.Promise;
+mongoose.connect(`mongodb://localhost/${appConfig.mongoDbName}`, { useNewUrlParser: true });
+const Schema = mongoose.Schema;
+const fileSchema = new Schema({
+  name: {
+    type: String
+  },
+  originalname: {
+    type: String
+  }.
+  path: {
+    type: String
+  },
+  size: {
+    type: Number
+  }
+});
 // storage, location everything
 let storage = multer.diskStorage({
   destination: './upload/',
@@ -25,7 +44,11 @@ app.post('/uploadPDF', upload.any(), function(req, res){
     if (!req.files)
       res.status(400).send({status: false, message: "No file where uploaded."})
     else{
-      // Before response whatever you want to store in database.
+      let newFileSave = new fileSchema();
+      newFileSave.name = req.files[0].filename;
+      newFileSave.originalname = req.files[0].originalname;
+      newFileSave.path = req.files[0].path;
+      newFileSave.size = req.files[0].size;
       res.json({
         timestamp: new Date(),
         baseUrl: req.baseUrl,
@@ -42,12 +65,11 @@ app.post('/uploadPDF', upload.any(), function(req, res){
 
 // GET request to access pdf.
 app.get('/upload/:name', function (req, res) {
-    fs.exists('.'+decodeURIComponent(req.url), function(exists){
-        if (exists) {
-            return res.sendfile(path.resolve('.'+decodeURIComponent(req.url)));
-        }else{
-          res.status(400).send({status: false, message: "which filed you request is not exist."})
-        }
-    })
+    let exist = fileSchema.findOne({ name: req.params.name });
+    if(exist){
+      return res.sendfile(path.resolve('.'+decodeURIComponent(exist.path)));
+    } else {
+      res.status(400).send({status: false, message: "which filed you request is not exist."})
+    }
 }); 
 /** Multer for File upload  END **/
