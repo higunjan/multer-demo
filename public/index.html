@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Vertical (basic) form</h2>
+  <form id="submitForm">
+    <div class="form-group">
+      <label for="filename">File Name:</label>
+      <input type="text" class="form-control" id="filename" placeholder="Enter filename" name="filename">
+    </div>
+
+    <div class="form-group">
+      <label>Choose File:</label>
+      <input type="file" class="form-control" id="file" placeholder="Select File" name="file">
+    </div>
+
+    <button type="button" class="btn btn-default submit">Submit</button>
+  </form>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+      var files = undefined;
+      $(document).on('change', '#file', function (event) {
+        files = $(this)[0].files;
+      });
+
+      $("button.submit").click(function(event) {
+        var data = new FormData();
+        data.append($('#filename').val(), files[0]);
+        data.append('name', $('#filename').val());
+
+        $.ajax({
+        url: '/uploadPDF',
+        type: 'POST',
+        data: data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        headers: {},
+        success: function (data, textStatus, jqXHR) {
+            if (data.status) {
+                console.log('File imported successfully', 'success');
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseJSON.message, 'error');
+        }
+    });
+      });
+  })
+</script>
+</body>
+</html>
