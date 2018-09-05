@@ -8,6 +8,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="sha256.js"></script>
+  <script src="tesseract.dev.js"></script>
 </head>
 <body>
 
@@ -29,6 +30,13 @@
     </div>
 
     <button type="button" class="btn btn-default submit">Submit</button>
+  </form>
+  <form>
+    <div class="form-group">
+      <label>Teserect Testing:</label>
+      <input type="file" onchange="Tesseract.recognize(this.files[0]).progress(function(data){console.log(data)}).then(function(data){console.log(data); if(data.text) { $('#imageText').val(data.text)} })">
+      <textarea style="height: 200px;width: 800px;" id="imageText"></textarea>
+    </div>  
   </form>
 </div>
 <script type="text/javascript">
