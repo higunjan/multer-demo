@@ -34,7 +34,7 @@
   <form>
     <div class="form-group">
       <label>Teserect Testing:</label>
-      <input type="file" onchange="Tesseract.recognize(this.files[0]).progress(function(data){console.log(data)}).then(function(data){console.log(data); if(data.text) { $('#imageText').val(data.text)} })">
+      <input type="file" id="tesseract">
       <textarea style="height: 200px;width: 800px;" id="imageText"></textarea>
     </div>  
   </form>
@@ -79,6 +79,25 @@
           }
         });
       });
+
+      $(document).on('change', '#tesseract', function(){
+        Tesseract
+          .recognize(this.files[0])
+          .progress(function(data){
+            console.log(data)
+          })
+          .then(function(data){
+            console.log(data); 
+            if(data.text) {
+              var obj = {};
+              data.lines.forEach(function(val, index){
+                obj["line"+(index+1)] = val.text;
+              })
+              var tmpData = JSON.stringify(obj, null, '\t');
+              $('#imageText').text(tmpData);
+            } 
+          });
+      })
   })
 </script>
 </body>
